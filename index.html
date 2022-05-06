@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Chat Box</title>
+  </head>
+  <body>
+    <h3>Enter Chat and press enter:</h3>
+<div>
+    <input type="text" placeholder="username" name="title" size="20" />
+    <input id=input placeholder="message" />
+  </div>
+ 
+
+<h3>Chat Output:</h3>
+<div id=box></div>
+
+<script src=https://cdn.pubnub.com/sdk/javascript/pubnub.4.28.2.min.js></script>
+<script> (function() {
+        var pubnub = new PubNub({
+            publishKey: 'pub-c-c6b1cbe7-4a18-4499-85e1-a0005041f080',
+            subscribeKey: 'sub-c-1be6cb80-cd69-11ec-b811-de5c934881d6'
+        });
+        function $(id) {
+            return document.getElementById(id);
+        }
+        var uname = document.getElementsById("title")[0].value;
+        var box = $('box'),
+            input = $('input'),
+            channel = '10chat-demo';
+        pubnub.addListener({
+            message: function(obj) {
+                box.innerHTML = ('' + obj.message).replace(/[<>]/g, '') + '<br>' + box.innerHTML
+            }
+        });
+        pubnub.subscribe({
+            channels: [channel]
+        });
+        input.addEventListener('keyup', function(e) {
+            if ((e.keyCode || e.charCode) === 13) {
+                pubnub.publish({
+                    channel: channel,
+                    message: input.value,
+                    x: (input.value = '')
+                });
+            }
+        });
+    })();
+</script>
+
+  </body>
+</html>
